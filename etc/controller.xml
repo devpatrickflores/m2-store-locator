@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/controller.xsd">
+    <router id="admin">
+        <route id="store_locator">
+            <module name="HH_StoreLocator" />
+        </route>
+    </router>
+    <router id="standard">
+        <route id="store_locator">
+            <module name="HH_StoreLocator" />
+        </route>
+    </router>
+</config>

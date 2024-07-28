@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * HH_StoreLocator Module 
+ *
+ * @category    StoreLocator Functionality
+ * @package     HH_StoreLocator
+ * @author      Patrick Flores
+ *
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="HH_StoreLocator::manager" title="Store Locator" module="HH_StoreLocator" sortOrder="10" resource="HH_StoreLocator::manager"/>
+    	<add id="HH_StoreLocator::add_row" title="Manage Models" module="HH_StoreLocator" sortOrder="20" parent="HH_StoreLocator::manager" action="grid/grid" resource="HH_StoreLocator::add_row"/>
+    </menu>
+</config>

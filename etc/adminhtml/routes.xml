@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * HH_StoreLocator Module 
+ *
+ * @category    StoreLocator Functionality
+ * @package     HH_StoreLocator
+ * @author      Patrick Flores
+ *
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="admin">
+        <route id="grid" frontName="grid">
+            <module name="HH_StoreLocator" />
+        </route>
+    </router>
+</config>
