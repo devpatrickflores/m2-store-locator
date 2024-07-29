@@ -1,11 +1,515 @@
 <?php
 $store = $block->getData('stores');
 ?>
-<p>Description:<?php echo $store['stores_description']; ?></p>
-<p>Address:<?php echo $store['stores_address']; ?></p>
-<p>Phone:<?php echo $store['stores_phone']; ?></p>
-<p>Hours:<?php echo $store['stores_hours']; ?></p>
-<p>Latitude:<?php echo $store['stores_lat']; ?></p>
-<p>Longitude:<?php echo $store['stores_long']; ?></p>
 
+<div class="hh-store-time">
+    <div class="store-status closed">Closed</div>
+    <div class="store-time-wrap">
+        <span class="store-details">Opens</span>
+        <span class="store-time">10:00AM</span>
+        <span class="store-date">Monday</span>
+    </div>
+</div>
 
+<div class="hh-store-main-img">
+    <picture>
+        <img src="/media/wysiwyg/store-image-placeholder.jpg" alt="Store Image" />
+    </picture>
+</div>
+
+<div class="hh-stores-wrap">
+    <div class="hh-left-col">
+        <div class="opening-hours-wrap">
+            <div class="hh-stores-label">Opening Hours</div>
+            <div class="opening-hours">
+                <?php echo $store['stores_hours']; ?>
+            </div>
+        </div>
+        <div class="contact-wrap">
+            <div class="hh-stores-label">Contact</div>
+            <div class="contact-number">
+                <a href="tel:<?php echo $store['stores_phone']; ?>"
+                    target="_self"><?php echo $store['stores_phone']; ?></a>
+            </div>
+        </div>
+        <div class="address-wrap">
+            <div class="hh-stores-label">Address</div>
+            <div class="store-address">
+                <?php echo $store['stores_address']; ?>
+            </div>
+        </div>
+        <div class="open-maps-wrap">
+            <div class="open-maps">
+                <a href="https://maps.google.com/?q=<?php echo $store['stores_name']; ?>" target="_self">Open in Maps
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true" focusable="false">
+                        <g clip-path="url(#clip0_7214_23500)">
+                            <path d="M1.5 14.5195V0.0195312H0V16.0195H16V14.5195H1.5Z" fill="black"></path>
+                            <path
+                                d="M6.48993 10.55L14.4799 2.56L14.4699 7.9H15.9699L15.9899 0H8.09993V1.5H13.4199L5.42993 9.49L6.48993 10.55Z"
+                                fill="black"></path>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_7214_23500">
+                                <rect width="16" height="16" fill="white"></rect>
+                            </clipPath>
+                        </defs>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="store-description-wrap">
+            <div class="store-description">
+                <?php echo $store['stores_description']; ?>
+            </div>
+        </div>
+    </div>
+    <div class="hh-right-col">
+        <div class="hh-individual-store-map">
+            <div id="map" style="height:100%;width:100%;" onload="initMap()"></div>
+        </div>
+    </div>
+</div>
+
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfPdThC9bAVP590qpYhG4cehinkPiT_Uw&libraries=places,geometry&callback=initMap"
+    async defer></script>
+<script>
+    function initMap() {
+        const location = { lat: <?php echo $store['stores_lat']; ?>, lng: <?php echo $store['stores_long']; ?> };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: location,
+            styles: lightestGrayMapStyles,
+            zoomControl: true,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT
+            },
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false
+        });
+
+        const centerControlDiv = document.createElement('div');
+        const centerControl = new CenterControl(centerControlDiv, map);
+        centerControlDiv.classList.add('custom-control');
+        centerControlDiv.style.position = 'absolute';
+        centerControlDiv.style.right = '10px';
+        centerControlDiv.style.top = '105px';
+
+        centerControlDiv.index = 1;
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(centerControlDiv);
+
+        var markerIconUrl = '/media/icons/locator-icon.png';
+        var iconSize = new google.maps.Size(38, 44);
+        var iconScaledSize = new google.maps.Size(38, 44);
+
+        const marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            icon: {
+                url: markerIconUrl,
+                size: iconSize,
+                scaledSize: iconScaledSize
+            }
+        });
+    }
+
+    function CenterControl(controlDiv, map) {
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '50%';
+        controlUI.style.boxShadow = 'rgba(0, 0, 0, 0.3) 0px 2px 6px';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.textAlign = 'center';
+        controlUI.style.height = '40px';
+        controlUI.style.width = '40px';
+        controlUI.style.display = 'flex';
+        controlUI.style.alignItems = 'center';
+        controlUI.style.justifyContent = 'center';
+        controlDiv.appendChild(controlUI);
+
+        var controlText = document.createElement('div');
+        controlText.style.position = 'relative';
+        controlText.style.top = '1px';
+        controlText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 14 14" fill="none"><g clip-path="url(#clip0_20029_37670)"><path d="M14 6.34371H11.7425C11.4537 4.22621 9.77375 2.55496 7.665 2.25746V-0.00878906H6.3525V2.25746C4.22625 2.55496 2.555 4.22621 2.26625 6.34371H0V7.65621H2.26625C2.555 9.77371 4.235 11.445 6.34375 11.7337V14H7.65625V11.7337C9.77375 11.445 11.445 9.76496 11.7337 7.65621H14V6.34371ZM7 10.4737C5.08375 10.4737 3.52625 8.91621 3.52625 6.99996C3.52625 5.08371 5.08375 3.52621 7 3.52621C8.91625 3.52621 10.4738 5.08371 10.4738 6.99996C10.4738 8.91621 8.91625 10.4737 7 10.4737Z" fill="#666666"/><path d="M6.99991 5.59998C6.22991 5.59998 5.59991 6.22998 5.59991 6.99998C5.59991 7.76998 6.22991 8.39998 6.99991 8.39998C7.76991 8.39998 8.39991 7.76998 8.39991 6.99998C8.39991 6.22998 7.76991 5.59998 6.99991 5.59998Z" fill="#666666"/></g><defs><clipPath id="clip0_20029_37670"><rect width="14" height="14" fill="white"/></clipPath></defs></svg>';
+        controlUI.appendChild(controlText);
+
+        controlUI.addEventListener('click', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    var markerIconUrl = '/media/icons/locator-icon-yah3.png';
+                    var iconSize = new google.maps.Size(38, 44);
+                    var iconScaledSize = new google.maps.Size(38, 44);
+
+                    map.setCenter(pos);
+                    new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        icon: {
+                            url: markerIconUrl,
+                            size: iconSize,
+                            scaledSize: iconScaledSize
+                        }
+                    });
+                }, function () {
+                    handleLocationError(true, map.getCenter());
+                });
+            } else {
+                handleLocationError(false, map.getCenter());
+            }
+        });
+    }
+
+    const lightestGrayMapStyles = [
+        {
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#eeeeee"
+                }
+            ]
+        },
+        {
+            "elementType": "labels.icon",
+            "stylers": [
+                {
+                    "visibility": "off"
+                }
+            ]
+        },
+        {
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#666666"
+                }
+            ]
+        },
+        {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+                {
+                    "color": "#ffffff"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "visibility": "off"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative.country",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#999999"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative.land_parcel",
+            "elementType": "labels",
+            "stylers": [
+                {
+                    "visibility": "off"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative.locality",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#888888"
+                }
+            ]
+        },
+        {
+            "featureType": "poi",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#666666"
+                }
+            ]
+        },
+        {
+            "featureType": "poi.park",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#dddddd"
+                }
+            ]
+        },
+        {
+            "featureType": "poi.park",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#888888"
+                }
+            ]
+        },
+        {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#ffffff"
+                }
+            ]
+        },
+        {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#666666"
+                }
+            ]
+        },
+        {
+            "featureType": "road.arterial",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#ffffff"
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#f5f5f5"
+                }
+            ]
+        },
+        {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#666666"
+                }
+            ]
+        },
+        {
+            "featureType": "transit",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#666666"
+                }
+            ]
+        },
+        {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+                {
+                    "color": "#e0e0e0"
+                }
+            ]
+        },
+        {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+                {
+                    "color": "#888888"
+                }
+            ]
+        }
+    ];
+</script>
+
+<style>
+    .stores-index-view #maincontent .hh-stores-wrap .hh-right-col #map .custom-control {
+        right: 8px !important;
+        top: 105px !important;
+    }
+
+    body.stores-index-view #maincontent {
+        max-width: 100%;
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+
+    body.stores-index-view #maincontent .page-title-wrapper {
+        margin-top: 50px;
+    }
+
+    body.stores-index-view #maincontent .page-title {
+        text-align: center;
+        display: table;
+        margin: auto;
+        font-family: 'Avenir';
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: 3px;
+    }
+
+    body.stores-index-view #maincontent .column.main {
+        width: 100%;
+        display: block;
+        padding-bottom: 0;
+    }
+
+    body.stores-index-view #maincontent .hh-store-time {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+
+    body.stores-index-view #maincontent .hh-store-time .store-status {
+        font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        margin-right: 5px;
+    }
+
+    body.stores-index-view #maincontent .hh-store-time .store-status.closed {
+        color: #cc3e3e;
+    }
+
+    body.stores-index-view #maincontent .hh-store-time .store-time-wrap {
+        font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    body.stores-index-view #maincontent .hh-store-time .store-time-wrap:before {
+        content: ".";
+        font-weight: bold;
+    }
+
+    body.stores-index-view #maincontent .hh-store-main-img {
+        margin: 0 -50px;
+        margin-bottom: 50px;
+    }
+
+    body.stores-index-view #maincontent .hh-store-main-img picture {
+        display: block;
+    }
+
+    body.stores-index-view #maincontent .hh-store-main-img picture img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .hh-left-col {
+        width: 50%;
+        flex-basis: 41.66666667%;
+        max-width: 41.66666667%;
+        padding-bottom: 50px; 
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .hh-right-col {
+        width: 50%;
+        -ms-flex-preferred-size: 50%;
+        -webkit-flex-basis: 50%;
+        -ms-flex-preferred-size: 50%;
+        flex-basis: 50%;
+        max-width: 50%;
+        padding-bottom: 50px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .hh-right-col .hh-individual-store-map {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .hh-right-col .hh-individual-store-map #map {
+        height: 100vh !important;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .hh-stores-label {
+        font-family: 'Avenir';
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 3px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .opening-hours {
+        margin-bottom: 25px;
+        line-height: 1.8em;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .opening-hours {
+        margin-bottom: 25px;
+        line-height: 1.8em;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .contact-wrap {
+        margin-bottom: 20px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .contact-wrap a {
+        text-decoration: none;
+        color: #111;
+        background-image: linear-gradient(transparent calc(100% - 1px), rgb(0, 0, 0) 1px);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        transition: background-size 0.3s ease 0s;
+        background-position: left -1px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .contact-wrap a:hover {
+        text-decoration: none;
+        background-size: 0% 100%;
+        background-position: right -1px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .address-wrap {
+        margin-bottom: 20px;
+        font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-style: normal;
+        font-size: 14px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .open-maps-wrap a {
+        color: #111;
+        display: flex;
+        align-items: center;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .open-maps-wrap a svg {
+        margin-left: 5px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .open-maps-wrap {
+        margin-bottom: 10px;
+    }
+
+    body.stores-index-view #maincontent .hh-stores-wrap .store-description-wrap .store-description {
+        font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.4em;
+    }
+</style>

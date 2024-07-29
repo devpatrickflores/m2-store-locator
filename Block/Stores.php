@@ -2,23 +2,13 @@
 namespace HH\StoreLocator\Block;
 
 use Magento\Framework\View\Element\Template;
-use HH\StoreLocator\Model\ResourceModel\Stores\CollectionFactory as StoresCollectionFactory;
 
-class Stores extends \Magento\Framework\View\Element\Template
+class Stores extends Template
 {
-    protected $storesCollectionFactory;
+    protected $_template = 'HH_StoreLocator::storelocator.phtml';
 
-    public function __construct(
-        Template\Context $context,
-        StoresCollectionFactory $storesCollectionFactory,
-        array $data = []
-    ) {
-        $this->StoresCollectionFactory = $storesCollectionFactory;
-        parent::__construct($context, $data);
-    }
-
-    public function getStoreLocatorCollection()
+    public function getStores()
     {
-        return $this->StoresCollectionFactory->create()->getItems();
+        return $this->getData('stores');
     }
 }

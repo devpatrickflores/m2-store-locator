@@ -5,7 +5,7 @@
         <referenceContainer name="sidebar.additional" remove="true"/>
         
         <referenceContainer name="content">
-            <block class="Magento\Framework\View\Element\Template" name="store.locator" template="HH_StoreLocator::storelocator.phtml"/>
+            <block class="HH\StoreLocator\Block\Stores" name="store.locator" template="HH_StoreLocator::storelocator.phtml"/>
         </referenceContainer>
     </body>
 </page>

@@ -40,16 +40,19 @@
         var infowindow;
         var markers = [];
         var storeData = [
-            { store_name: 'HARLI + HARPA Sunshine Store', latitude: -37.7816, longitude: 144.8486, address: 'Sunshine, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Fitzroy Store', latitude: -37.8017, longitude: 144.9834, address: 'Fitzroy, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Southbank Store', latitude: -37.8212, longitude: 144.9646, address: 'Southbank, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Richmond Store', latitude: -37.8231, longitude: 144.9936, address: 'Richmond, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Brunswick Store', latitude: -37.7681, longitude: 144.9615, address: 'Brunswick, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Carlton Store', latitude: -37.8054, longitude: 144.9634, address: 'Carlton, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Prahran Store', latitude: -37.8494, longitude: 144.9934, address: 'Prahran, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Malvern Store', latitude: -37.8675, longitude: 145.0430, address: 'Malvern, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Footscray Store', latitude: -37.7980, longitude: 144.9034, address: 'Footscray, Victoria, Australia' },
-            { store_name: 'HARLI + HARPA Docklands Store', latitude: -37.8142, longitude: 144.9467, address: 'Docklands, Victoria, Australia' }
+            <?php $stores = $block->getStores(); ?>
+        <?php if ($stores->getSize()): ?>
+                            <?php foreach ($stores as $index => $store): ?>
+                                                {
+                        store_name: '<?php echo addslashes($store->getStoresName()); ?>',
+                        latitude: <?php echo $store->getStoresLat(); ?>,
+                        longitude: <?php echo $store->getStoresLong(); ?>,
+                        address: '<?php echo addslashes($store->getStoresAddress()); ?>',
+                        store_url: '/stores/index/view/id/<?php echo $store['entity_id']; ?>'
+                    }<?php if ($index < $stores->getSize() - 1): ?>, <?php endif; ?>
+                                                <?php echo $store->getStoresEntityId(); ?>
+                            <?php endforeach; ?>
+        <?php endif; ?>
         ];
 
         function initMap() {
@@ -224,7 +227,7 @@
             ];
 
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
+                zoom: 11,
                 center: { lat: -37.81, lng: 144.96 },
                 styles: lightestGrayMapStyles,
                 zoomControl: true,       // Show zoom controls
@@ -241,9 +244,19 @@
             // Initialize markers
             storeData.forEach(function (store) {
                 var latLng = new google.maps.LatLng(store.latitude, store.longitude);
+                var markerIconUrl = '/media/icons/locator-icon.png';
+                var iconSize = new google.maps.Size(38, 44);
+                var iconScaledSize = new google.maps.Size(38, 44);
+
+
                 var mapMarker = new google.maps.Marker({
                     position: latLng,
                     map: map,
+                    icon: {
+                        url: markerIconUrl,
+                        size: iconSize,
+                        scaledSize: iconScaledSize
+                    },
                     title: store.store_name
                 });
 
@@ -295,16 +308,29 @@
                 nearbyStores.forEach(store => {
                     var listItem = document.createElement('li');
                     listItem.innerHTML = `
+                        <a href="${store.store_url}">
                         <strong>${store.store_name}</strong><br>
                         ${store.address}<br>
                         ${store.distance.toFixed(2)} km
+                        </a>
                     `;
                     storeList.appendChild(listItem);
 
                     var latLng = new google.maps.LatLng(store.latitude, store.longitude);
+
+                    var markerIconUrl = '/media/icons/locator-icon.png';
+                    var iconSize = new google.maps.Size(38, 44);
+                    var iconScaledSize = new google.maps.Size(38, 44);
+
+
                     var mapMarker = new google.maps.Marker({
                         position: latLng,
                         map: map,
+                        icon: {
+                            url: markerIconUrl,
+                            size: iconSize,
+                            scaledSize: iconScaledSize
+                        },
                         title: store.store_name
                     });
 
@@ -325,14 +351,14 @@
                 }
             });
         }
-    
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             var searchBox = document.querySelector('#search-box');
             var searchMap = document.querySelector('.store-map');
             var storeWrapper = document.querySelector('.store-image');
 
             if (searchBox && storeWrapper && searchMap) {
-                searchBox.addEventListener('input', function() {
+                searchBox.addEventListener('input', function () {
                     storeWrapper.style.height = '0';
                     searchMap.style.display = 'block';
                 });
@@ -435,6 +461,11 @@
             border: 1px solid #ddd;
         }
 
+        body.stores-index-index .store-locator .store-locator-left #store-list li a {
+            text-decoration: none;
+            color: #111;
+        }
+
         body.stores-index-index .store-locator .store-locator-right .store-image img {
             width: 100%;
             min-width: 800px;
@@ -450,7 +481,7 @@
 
         body.stores-index-index .store-locator .store-locator-left::-webkit-scrollbar {
             width: 6px;
-            height: 6px; 
+            height: 6px;
         }
 
         body.stores-index-index .store-locator .store-locator-left::-webkit-scrollbar-button:start:decrement,
