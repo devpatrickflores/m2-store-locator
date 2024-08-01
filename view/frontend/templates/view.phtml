@@ -71,6 +71,10 @@ $store = $block->getData('stores');
     </div>
 </div>
 
+<div class="nearby-stores-wrap" onload="initNearbyStores()">
+    <div id="nearby-stores"></div>
+</div>
+
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfPdThC9bAVP590qpYhG4cehinkPiT_Uw&libraries=places,geometry&callback=initMap"
     async defer></script>
@@ -336,6 +340,57 @@ $store = $block->getData('stores');
             ]
         }
     ];
+
+    function initNearbyStores() {
+        <?php
+        $storeCollection = $block->getNearbyStores();
+        $storesData = $storeCollection->getData();
+        ?>
+        const storeData = [
+            <?php foreach ($storesData as $index => $store): ?>{
+                    storeName: '<?php echo addslashes($store["stores_name"]); ?>',
+                    latitude: <?php echo $store["stores_lat"]; ?>,
+                    longitude: <?php echo $store["stores_long"]; ?>,
+                    address: '<?php echo addslashes($store["stores_address"]); ?>',
+                    storeUrl: '/stores/index/view/id/<?php echo $store['entity_id']; ?>'
+                }<?php if ($index < count($storesData) - 1): ?>, <?php endif; ?>
+        <?php endforeach; ?>
+        ];
+
+        const referencePoint = new google.maps.LatLng(<?php echo $store['stores_lat']; ?>, <?php echo $store['stores_long']; ?>);
+        const nearbyStores = storeData
+            .map(store => {
+                const storeLatLng = new google.maps.LatLng(store.latitude, store.longitude);
+                const distance = google.maps.geometry.spherical.computeDistanceBetween(storeLatLng, referencePoint) / 1000;
+                return {
+                    ...store,
+                    distance: distance
+                };
+            })
+            .filter(store => store.distance <= 10) // Filter stores within 10 km
+            .sort((a, b) => a.distance - b.distance); // Sort by distance
+        const storeList = document.getElementById('nearby-stores');
+        if (storeList) {
+            const ul = document.createElement('ul');
+            storeList.appendChild(ul);
+
+            nearbyStores.forEach(store => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+            <a href="${store.storeUrl}">
+                <strong>${store.storeName}</strong><br>
+                ${store.address}<br>
+                ${store.distance.toFixed(2)} km
+            </a>
+        `;
+                ul.appendChild(listItem);
+            });
+        } else {
+            console.error('Element with id "nearby-stores" not found.');
+        }
+
+    }
+
 </script>
 
 <style>
@@ -425,7 +480,7 @@ $store = $block->getData('stores');
         width: 50%;
         flex-basis: 41.66666667%;
         max-width: 41.66666667%;
-        padding-bottom: 50px; 
+        padding-bottom: 50px;
     }
 
     body.stores-index-view #maincontent .hh-stores-wrap .hh-right-col {
